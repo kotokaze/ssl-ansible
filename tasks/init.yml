@@ -1,0 +1,43 @@
+- name: Install dev tools
+  become: yes
+  apt:
+    name:
+      - git
+      - x11-apps
+      - doxygen
+      - doxygen-latex
+      - graphviz
+      - language-pack-ja
+      - python3-pip
+
+- name: Generate locale
+  become: yes
+  locale_gen:
+    name: '{{ LOCALE }}'
+
+- name: Set locale
+  become: yes
+  command:
+    cmd: 'update-locale LANG={{ LOCALE }}'
+
+- name: Set timezone
+  become: yes
+  command:
+    cmd: 'timedatectl set-timezone {{ TZ }}'
+
+- name: Download Github cli GPG key
+  become: yes
+  get_url:
+    url: 'https://cli.github.com/packages/githubcli-archive-keyring.gpg'
+    dest: '/usr/share/keyrings/githubcli-archive-keyring.gpg'
+
+- name: Add repo to sources
+  become: yes
+  shell: 'echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null'
+
+- name: Install github cli
+  become: yes
+  apt:
+    update_cache: yes
+    name:
+      - gh

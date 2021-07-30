@@ -1,0 +1,20 @@
+- name: Make dir
+  file:
+    path: '{{ ansible_env.HOME }}/workspace/ssl-game-controller'
+    state: directory
+
+- name: Fetch release data
+  uri:
+    url: 'https://api.github.com/repos/RoboCup-SSL/ssl-game-controller/releases/latest'
+    body_format: json
+  register: 'release'
+
+- name: Download game controller
+  get_url:
+    url: 'https://github.com/RoboCup-SSL/ssl-game-controller/releases/download/{{ release.json.tag_name }}/ssl-game-controller_{{ release.json.tag_name }}_linux_amd64'
+    dest: '{{ ansible_env.HOME }}/workspace/ssl-game-controller/ssl-game-controller_{{ release.json.tag_name }}_linux_amd64'
+
+- name: Give executable permissions
+  file:
+    path: '{{ ansible_env.HOME }}/workspace/ssl-game-controller/ssl-game-controller_{{ release.json.tag_name }}_linux_amd64'
+    mode: a+x

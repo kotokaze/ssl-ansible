@@ -1,0 +1,39 @@
+- name: Install grsim dependencies
+  become: yes
+  apt:
+    name:
+      - build-essential
+      - cmake
+      - pkg-config
+      - qt5-default
+      - libqt5opengl5-dev
+      - libgl1-mesa-dev
+      - libglu1-mesa-dev
+      - libprotobuf-dev
+      - protobuf-compiler
+      - libode-dev
+      - libboost-dev
+
+- name: Clone grSim
+  git:
+    repo: https://github.com/RoboCup-SSL/grSim.git
+    dest: '{{ ansible_env.HOME }}/workspace/grSim'
+
+- name: Make build dir
+  ansible.builtin.file:
+    path: '{{ ansible_env.HOME }}/workspace/grSim/bild'
+    state: directory
+
+- name: Generate Makefile for grSim with cmake
+  command:
+    chdir: '{{ ansible_env.HOME }}/workspace/grSim/build'
+    cmd: 'cmake ..'
+
+- name: Compile grSim
+  make:
+    chdir: '{{ ansible_env.HOME }}/workspace/grSim/build'
+
+- name: Add environment variable
+  lineinfile:
+    path: '{{ ansible_env.HOME }}/.profile'
+    line: 'export LIBGL_ALWAYS_INDIRECT=1'

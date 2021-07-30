@@ -1,0 +1,8 @@
+---
+- hosts: all
+  vars_files: vars/init.yml
+  tasks:
+    - include_tasks: tasks/init.yml
+    - include_tasks: tasks/foxy.yml
+    - include_tasks: tasks/grsim.yml
+    - include_tasks: tasks/controller.yml
